@@ -1,0 +1,72 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Converts images to web-optimized WebP using ImageMagick.
+# Outputs to public/images/{carousel,bts,bios}/ — originals are untouched.
+# Usage: ruby script/convert-images [--force]
+
+require "fileutils"
+require "open3"
+
+FORCE = ARGV.include?("--force")
+ROOT  = File.expand_path("..", __dir__)
+
+GROUPS = [
+  { name: "Carousel stills", src: "carousel", quality: 85, exts: %w[png PNG] },
+  { name: "BTS photos",      src: "bts",      quality: 88, exts: %w[jpg JPG jpeg JPEG heic HEIC png PNG] },
+  { name: "Bios",            src: "bios",     quality: 88, exts: %w[jpg JPG jpeg JPEG png PNG heic HEIC] },
+]
+
+def slugify(name)
+  File.basename(name, ".*")
+    .downcase
+    .gsub(/[^a-z0-9]+/, "-")
+    .gsub(/^-|-$/, "")
+end
+
+def file_kb(path)
+  File.size(path) / 1024
+end
+
+def convert(src, dst, quality)
+  if File.exist?(dst) && !FORCE
+    puts "  skip (exists): #{dst}"
+    return
+  end
+
+  FileUtils.mkdir_p(File.dirname(dst))
+  _out, err, status = Open3.capture3("magick", src, "-quality", quality.to_s, dst)
+
+  unless status.success?
+    warn "  ERROR converting #{src}: #{err}"
+    return
+  end
+
+  src_kb  = file_kb(src)
+  dst_kb  = file_kb(dst)
+  savings = ((src_kb - dst_kb) * 100 / src_kb).round
+
+  puts "  #{File.basename(src)} → #{File.basename(dst)}  (#{src_kb}K → #{dst_kb}K, #{savings}% smaller)"
+end
+
+GROUPS.each do |group|
+  puts "\n==> #{group[:name]}"
+
+  sources = group[:exts]
+    .flat_map { |ext| Dir["#{ROOT}/#{group[:src]}/*.#{ext}"] }
+    .uniq
+    .sort
+
+  if sources.empty?
+    puts "  (no files found)"
+    next
+  end
+
+  sources.each do |src|
+    dst = "#{ROOT}/public/images/#{group[:src]}/#{slugify(src)}.webp"
+    convert(src, dst, group[:quality])
+  end
+end
+
+puts "\nDone. Output is in public/images/"
+puts `du -sh #{ROOT}/public/images/`.strip

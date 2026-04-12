@@ -1,0 +1,4 @@
+# Raw source images — commit the converted WebP outputs in public/images/ instead
+carousel/
+bts/
+bios/
