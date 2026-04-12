@@ -1,3 +1,10 @@
+// ─── iOS BFCache fix ────────────────────────────────────────────────────────
+// Safari restores pages from cache in a way that can leave the page visually
+// blank (content in DOM but not painted). Reloading on BFCache restore fixes it.
+window.addEventListener("pageshow", (e) => {
+  if (e.persisted) window.location.reload();
+});
+
 // ─── Carousel ──────────────────────────────────────────────────────────────
 const carousel = document.querySelector(".carousel");
 
