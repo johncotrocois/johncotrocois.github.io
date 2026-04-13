@@ -227,7 +227,7 @@ h2 {
   height: 140px;
   border-radius: 50%;
   object-fit: cover;
-  object-position: center top;
+  object-position: center;
   border: 3px solid var(--color-border);
 }
 
