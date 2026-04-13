@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Generates smart-cropped thumbnails for the BTS grid.
+#
+# Requires: bun add smartcrop-cli  (or: bun install if already in package.json)
+#
+# Usage: bash script/smartcrop-thumbs [--force]
+#
+# Reads:  public/images/bts/*.webp  (already-converted source images)
+# Writes: public/images/bts/thumbs/ (grid preview thumbnails)
+#
+# The grid cells display at 280–600px wide × 260px tall.
+# 560×520 gives a 2× retina thumbnail at the same aspect ratio.
+
+set -euo pipefail
+
+FORCE=0
+[[ "${1-}" == "--force" ]] && FORCE=1
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SRC_DIR="$ROOT/public/images/bts"
+THUMB_DIR="$ROOT/public/images/bts/thumbs"
+WIDTH=560
+HEIGHT=520
+
+mkdir -p "$THUMB_DIR"
+
+shopt -s nullglob
+files=("$SRC_DIR"/*.webp)
+
+if [[ ${#files[@]} -eq 0 ]]; then
+  echo "No .webp files found in $SRC_DIR"
+  exit 1
+fi
+
+for src in "${files[@]}"; do
+  name="$(basename "$src")"
+  dst="$THUMB_DIR/$name"
+
+  if [[ -f "$dst" && $FORCE -eq 0 ]]; then
+    echo "  skip (exists): $name"
+    continue
+  fi
+
+  echo "  $name → thumbs/$name"
+  bunx smartcrop --width "$WIDTH" --height "$HEIGHT" --skinWeight 2.5 --detailWeight 0.15 "$src" "$dst"
+done
+
+echo ""
+echo "Done. Thumbnails in public/images/bts/thumbs/"
+du -sh "$THUMB_DIR"

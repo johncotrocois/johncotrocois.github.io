@@ -5,6 +5,38 @@ window.addEventListener("pageshow", (e) => {
   if (e.persisted) window.location.reload();
 });
 
+// ─── BTS Lightbox ──────────────────────────────────────────────────────────
+(function () {
+  const overlay = document.createElement("div");
+  overlay.className = "lightbox";
+  const img = document.createElement("img");
+  overlay.appendChild(img);
+  document.body.appendChild(overlay);
+
+  function open(src, alt) {
+    img.src = src;
+    img.alt = alt;
+    overlay.classList.add("is-open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function close() {
+    overlay.classList.remove("is-open");
+    img.src = "";
+    document.body.style.overflow = "";
+  }
+
+  document.querySelectorAll(".bts-lightbox").forEach((a) => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      open(a.href, a.querySelector("img")?.alt ?? "");
+    });
+  });
+
+  overlay.addEventListener("click", close);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+})();
+
 // ─── Carousel ──────────────────────────────────────────────────────────────
 const carousel = document.querySelector(".carousel");
 

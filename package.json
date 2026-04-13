@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "opencv": "^7.0.0",
+    "smartcrop-cli": "^2.0.3"
+  }
+}

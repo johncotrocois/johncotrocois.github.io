@@ -177,7 +177,35 @@ h2 {
   transition: opacity 0.2s;
 }
 
-.bts-grid img:hover { opacity: 0.85; }
+.bts-grid a { display: block; }
+
+.bts-grid img:hover { opacity: 0.85; cursor: zoom-in; }
+
+/* ─── Lightbox ───────────────────────────────────────────────────────────── */
+.lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  cursor: zoom-out;
+  padding: 1.5rem;
+}
+
+.lightbox.is-open {
+  display: flex;
+}
+
+.lightbox img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 3px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+  cursor: default;
+}
 
 /* ─── Bios ───────────────────────────────────────────────────────────────── */
 .bios-section { background: var(--color-bg-surface); }
