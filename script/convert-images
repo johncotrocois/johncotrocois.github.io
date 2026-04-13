@@ -12,7 +12,7 @@ FORCE = ARGV.include?("--force")
 ROOT  = File.expand_path("..", __dir__)
 
 GROUPS = [
-  { name: "Carousel stills", src: "carousel", quality: 85, exts: %w[png PNG] },
+  { name: "Carousel stills", src: "carousel", quality: 85, exts: %w[png PNG jpg JPG jpeg JPEG] },
   { name: "BTS photos",      src: "bts",      quality: 88, exts: %w[jpg JPG jpeg JPEG heic HEIC png PNG] },
   { name: "Bios",            src: "bios",     quality: 88, exts: %w[jpg JPG jpeg JPEG png PNG heic HEIC] },
 ]
